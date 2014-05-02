@@ -1,80 +1,54 @@
-/*
- ============================================================================
- Name        : Sum.c
- Author      : Somshubra Majumdar
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
- ============================================================================
- */
-#include<stdio.h>
-#include<conio.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#define TRUE 1
-#define FALSE 0
+void sumOfSub(int,int,int);
 
-int inc[50],w[50],sum,n;
+static int m=0;
+int*w;
+int*x;
 
-void sumset(int i,int wt,int total);
-
-int promising(int i,int wt,int total) {
-	return(((wt+total)>=sum)&&((wt==sum)||(wt+w[i+1]<=sum)));
-}
-
-int  main() {
-	int i,j,n,temp,total=0;
+int main() {
+	int i=0,sum=0,n=0;
 
 	setbuf(stdout, NULL);
 
-	printf("\n Enter how many numbers:\n");
+	printf("Enter size of array: ");
 	scanf("%d",&n);
-	printf("\n Enter %d numbers to th set:\n",n);
-	for(i=0;i<n;i++) {
+	w=(int*)calloc(n+1, sizeof(int));
+	x=(int*)calloc(n+1, sizeof(int));
+	printf("Enter %d elements: ",n);
+	for(i=1;i <= n;i++) {
 		scanf("%d",&w[i]);
-		total+=w[i];
+		sum+=w[i];
+		x[i]=0;
 	}
-	printf("\n Input the sum value to create sub set:\n");
-	scanf("%d",&sum);
-	for(i=0;i<=n;i++)
-		for(j=0;j<n-1;j++)
-			if(w[j]>w[j+1]) {
-				temp=w[j];
-				w[j]=w[j+1];
-				w[j+1]=temp;
-			}
-
-	printf("\n The given %d numbers in ascending order:\n",n);
-	for(i=0;i<n;i++)
-		printf("%d \t",w[i]);
-	if((total<sum))
-		printf("\n Subset construction is not possible");
+	printf("Enter the sum to be obtained: ");
+	scanf("%d",&m);
+	if(sum < m)
+	{
+		printf("Not possible to obtain any subset !!! ");
+	}
 	else {
-		for(i=0;i<n;i++)
-			inc[i]=0;
-		printf("\n The solution using backtracking is:\n");
-		sumset(-1,0,total);
+		printf("Possible Subsets are( 0 indicates exclusion and 1 indicates inclusion) : ");
+		sumOfSub(0,1,sum);
 	}
-
 	return 0;
 }
-void sumset(int i,int wt,int total) {
-	int j;
-	if(promising(i,wt,total))
+
+void sumOfSub(int s,int k,int r) {
+	int i=0;
+	x[k]=1;
+	if(s+w[k]==m) {
+		printf("\n");
+		for(i=1;i <= k; i++)
+			printf("\t%d",x[i]);
+	}
+	else if((s+w[k]+w[k+1]) <= m) {
+		sumOfSub(s+w[k],k+1,r-w[k]);
+	}
+	if((s+r-w[k]) >= m  && (s+w[k+1]) <= m)
 	{
-		if(wt==sum)
-		{
-			printf("\n{\t");
-			for(j=0;j<=i;j++)
-				if(inc[j])
-					printf("%d\t",w[j]);
-			printf("}\n");
-		}
-		else
-		{
-			inc[i+1]=TRUE;
-			sumset(i+1,wt+w[i+1],total-w[i+1]);
-			inc[i+1]=FALSE;
-			sumset(i+1,wt,total-w[i+1]);
-		}
+		x[k]=0;
+		sumOfSub(s,k+1,r-w[k]);
 	}
 }
